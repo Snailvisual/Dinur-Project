@@ -1,22 +1,22 @@
 "use client";
 
-import localFont from "next/font/local";
+// import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "./Sidebar";
 import React, { useState, useEffect } from "react";
 import { UserContextProvider } from "./UserContext";
 
-const geistSans = localFont({
-  src: "/fonts/Geist-Regular.woff2",
-  variable: "--font-geist-sans",
-  display: "swap",
-});
+// const geistSans = localFont({
+//   src: "/fonts/Geist-Regular.woff2",
+//   variable: "--font-geist-sans",
+//   display: "swap",
+// });
 
-const geistMono = localFont({
-  src: "/fonts/GeistMono-Regular.woff2",
-  variable: "--font-geist-mono",
-  display: "swap",
-});
+// const geistMono = localFont({
+//   src: "/fonts/GeistMono-Regular.woff2",
+//   variable: "--font-geist-mono",
+//   display: "swap",
+// });
 
 export default function RootLayout({
   children,
@@ -76,7 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${"antialiased"}`}
       >
         <UserContextProvider>
           <div className="flex min-h-screen">
