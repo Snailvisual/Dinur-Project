@@ -1,6 +1,6 @@
 "use client";
 
-import localFont from "next/font/local";
+import localFont from "/Users/dinurm.pradipta/dinur-project/public/fonts";
 import "./globals.css";
 import Sidebar from "./Sidebar";
 import React, { useState, useEffect } from "react";
