@@ -1,19 +1,19 @@
 "use client";
 
-import localFont from "/Users/dinurm.pradipta/dinur-project/public/fonts";
+import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "./Sidebar";
 import React, { useState, useEffect } from "react";
 import { UserContextProvider } from "./UserContext";
 
 const geistSans = localFont({
-  src: "//fonts/Geist-Regular.woff2",
+  src: "/fonts/Geist-Regular.woff2",
   variable: "--font-geist-sans",
   display: "swap",
 });
 
 const geistMono = localFont({
-  src: "//fonts/GeistMono-Regular.woff2",
+  src: "/fonts/GeistMono-Regular.woff2",
   variable: "--font-geist-mono",
   display: "swap",
 });
