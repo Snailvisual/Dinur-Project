@@ -336,7 +336,7 @@ export default function ProfilePage() {
           >
             <h2 className="text-xl font-bold mb-4 text-[#56ad9c]">Login</h2>
             <div className="w-full">
-              <LoginPageWithRegisterPopup onLoginSuccess={handleLoginSuccess} />
+              <LoginPage />
             </div>
             <div className="flex justify-center mt-4 w-full">
               <button
@@ -381,10 +381,7 @@ function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () =>
   const [showRegister, setShowRegister] = useState(false);
   return (
     <>
-      <LoginPage
-        onShowRegister={() => setShowRegister(true)}
-        onLoginSuccess={onLoginSuccess}
-      />
+      <LoginPage />
       {showRegister && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"
@@ -394,7 +391,7 @@ function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () =>
           <div
             onClick={e => e.stopPropagation()}
           >
-            <RegisterPage onCancel={() => setShowRegister(false)} />
+            <RegisterPage />
           </div>
         </div>
       )}
