@@ -7,6 +7,7 @@ import RegisterPage from "../register/page";
 import { useUser } from "../UserContext";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../utils/cropImage";
+import Image from "next/image";
 
 export interface UserType {
   name: string;
@@ -117,7 +118,7 @@ export default function ProfilePage() {
         }
       }
     }
-  }, []);
+  }, [setUser]);
 
   function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -222,7 +223,7 @@ export default function ProfilePage() {
           <div className="flex flex-1 gap-4">
             <div className="bg-white rounded-lg shadow p-4 flex-1 relative flex items-center gap-4">
               {user.photo && (
-                <img src={user.photo} alt="Foto Profil" className="w-16 h-16 rounded-lg object-cover" />
+                <Image src={user.photo} alt="Foto Profil" className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
               )}
               <div className="flex-1">
                 <div className="text-lg font-bold text-[#56ad9c]">{user.name}</div>
@@ -255,7 +256,7 @@ export default function ProfilePage() {
                 <input type="file" accept="image/*" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" disabled={isLocked} />
                 {editPhoto && (
                   <>
-                    <img src={editPhoto} alt="Preview" className="w-10 h-10 rounded-lg object-cover" />
+                    <Image src={editPhoto} alt="Preview" className="w-10 h-10 rounded-lg object-cover" width={40} height={40} />
                     <button type="button" className="text-xs text-red-500" onClick={handleRemovePhoto} title="Hapus Foto">Hapus</button>
                   </>
                 )}

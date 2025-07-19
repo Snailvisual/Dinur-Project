@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import LoginPage from "../login/page"; // Pastikan path ini sesuai dengan lokasi LoginPage
+import Image from "next/image";
 
 interface ContentPlanRow {
   tanggal: string;
@@ -248,10 +249,12 @@ export default function ContentPlanPage() {
             </div>
             {/* Konten Modal */}
             <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-b-2xl p-4 overflow-auto">
-              <img
+              <Image
                 src={imgPreviewUrl}
                 alt="Preview Visual Content"
                 className="max-h-[60vh] max-w-full rounded-lg shadow-lg border border-[#56ad9c] bg-gray-50 object-contain"
+                width={800}
+                height={800}
               />
             </div>
           </div>

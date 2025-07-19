@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { FiLock, FiUnlock } from "react-icons/fi";
 
 const KPI_TARGET_KEY = "kpiTargetRows";
@@ -51,7 +51,7 @@ function useColumnWidths(defaults: number[], storageKey?: string) {
 }
 
 export default function KPITargetPage() {
-	const months = [
+	const months = useMemo(() => [
 		"Januari",
 		"Februari",
 		"Maret",
@@ -64,7 +64,7 @@ export default function KPITargetPage() {
 		"Oktober",
 		"November",
 		"Desember",
-	];
+	], []);
 	const currentYear = new Date().getFullYear();
 	const [selectedYear, setSelectedYear] = useState(currentYear);
 
@@ -172,7 +172,7 @@ export default function KPITargetPage() {
 			const savedTikTok = localStorage.getItem(cardWidthTikTokKey);
 			setCardWidthTikTok(savedTikTok ? parseInt(savedTikTok, 10) || 700 : 700);
 		}
-	}, [selectedYear]);
+	}, [selectedYear, cardWidthKey, cardWidthTikTokKey]);
 	const startCardResize = (e: React.MouseEvent) => {
 		e.preventDefault();
 		const startX = e.clientX;
@@ -224,7 +224,7 @@ export default function KPITargetPage() {
 			const saved = localStorage.getItem(lockKey);
 			setLockSize(saved === "true");
 		}
-	}, [selectedYear]);
+	}, [selectedYear, lockKey]); // Tambahkan lockKey ke dependency array useEffect terkait
 	function handleLockSize() {
 		setLockSize(true);
 		if (typeof window !== "undefined") {
