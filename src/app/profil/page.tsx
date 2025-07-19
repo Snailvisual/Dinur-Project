@@ -404,3 +404,10 @@ function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () =>
 // Since setShowEdit is used to control edit mode, implement it as a local state setter.
 // (Removed duplicate declaration and unused function)
 
+export interface LoginPageProps {
+  onShowRegister?: () => void;
+  onLoginSuccess?: () => void;
+}
+
+export default function LoginPage(props: LoginPageProps)
+
