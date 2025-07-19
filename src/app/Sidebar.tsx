@@ -37,27 +37,14 @@ export default function Sidebar() {
         style={{ boxShadow: "0 8px 32px rgba(86,173,156,0.18)" }}
       >
         <div className="flex items-center mb-10">
-          {user.sidebarLogo ? (
-            <Image
-              src={user.sidebarLogo}
-              alt="Logo Sidebar"
-              className="w-10 h-10 object-contain"
-              width={150}
-              height={60}
-              style={{ background: 'none', borderRadius: 0, boxShadow: 'none', alignContent: "center" }}
-            />
-          ) : user.photo ? (
-            <Image
-              src={user.photo}
-              alt="Logo User"
-              className="w-10 h-10 rounded-lg object-cover bg-white"
-              width={40}
-              height={40}
-              style={{ minWidth: 40, minHeight: 40 }}
-            />
-          ) : (
-            <Image src="/globe.svg" alt="Logo" width={40} height={40} />
-          )}
+          <Image
+            src="/socialflow-logo.png"
+            alt="Logo Socialflow"
+            className="w-40 h-auto object-contain"
+            width={200}
+            height={60}
+            priority
+          />
         </div>
         <nav className="flex flex-col gap-4 flex-1">
           <a
