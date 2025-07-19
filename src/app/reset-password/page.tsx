@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams?.get("email") || "";
@@ -12,7 +12,6 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,21 +55,21 @@ export default function ResetPasswordPage() {
           <input type="hidden" value={email} />
           <input type="hidden" value={token} />
           <input
-            type={showPassword ? "text" : "password"}
+            type="password"
             placeholder="Password baru"
             className="border rounded px-3 py-2 w-full"
             value={newPassword}
             onChange={e => setNewPassword(e.target.value)}
           />
           <input
-            type={showPassword ? "text" : "password"}
+            type="password"
             placeholder="Konfirmasi password baru"
             className="border rounded px-3 py-2 w-full"
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
           />
           <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
-            <input type="checkbox" checked={showPassword} onChange={e => setShowPassword(e.target.checked)} />
+            <input type="checkbox" checked={newPassword === confirmPassword && newPassword.length > 0} readOnly />
             Tampilkan password
           </label>
           {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -79,5 +78,13 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
