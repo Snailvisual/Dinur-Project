@@ -98,7 +98,7 @@ export default function KPITargetPage() {
 				);
 			}
 		}
-	}, [selectedYear]);
+	}, [selectedYear, months]);
 
 	function handleKPIChange(
 		idx: number,

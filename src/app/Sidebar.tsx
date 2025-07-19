@@ -38,17 +38,21 @@ export default function Sidebar() {
       >
         <div className="flex items-center mb-10">
           {user.sidebarLogo ? (
-            <img
+            <Image
               src={user.sidebarLogo}
               alt="Logo Sidebar"
               className="w-10 h-10 object-contain"
-              style={{ minWidth: 150, minHeight: 60, background: 'none', borderRadius: 0, boxShadow: 'none', alignContent: "center" }}
+              width={150}
+              height={60}
+              style={{ background: 'none', borderRadius: 0, boxShadow: 'none', alignContent: "center" }}
             />
           ) : user.photo ? (
-            <img
+            <Image
               src={user.photo}
               alt="Logo User"
               className="w-10 h-10 rounded-lg object-cover bg-white"
+              width={40}
+              height={40}
               style={{ minWidth: 40, minHeight: 40 }}
             />
           ) : (

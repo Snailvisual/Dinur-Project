@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Modal from "react-modal";
 import { FaTrophy, FaArrowDown, FaInstagram, FaTiktok } from "./DashboardIcons";
+import Image from "next/image";
 
 const Chart = dynamic(() => import("./Chart"), { ssr: false });
 
@@ -410,7 +411,7 @@ export default function DashboardPage() {
         <div className="flex flex-1 gap-4">
           <div className="bg-white rounded-lg shadow p-4 flex-1 relative flex items-center gap-4" style={{ minWidth: colWidths.ig }}>
             {akunIG.photo && (
-              <img src={akunIG.photo} alt="IG Profile" className="w-16 h-16 rounded-lg object-cover" />
+              <Image src={akunIG.photo} alt="IG Profile" className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
             )}
             <div className="flex-1">
               <div className="text-lg font-bold text-[#56ad9c]">{akunIG.nama}</div>
@@ -464,7 +465,7 @@ export default function DashboardPage() {
         <div className="flex flex-1 gap-4">
           <div className="bg-white rounded-lg shadow p-4 flex-1 relative flex items-center gap-4" style={{ minWidth: colWidths.tiktok }}>
             {akunTikTok.photo && (
-              <img src={akunTikTok.photo} alt="TikTok Profile" className="w-16 h-16 rounded-lg object-cover" />
+              <Image src={akunTikTok.photo} alt="TikTok Profile" className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
             )}
             <div className="flex-1">
               <div className="text-lg font-bold text-[#56ad9c]">{akunTikTok.nama}</div>
@@ -795,7 +796,7 @@ export default function DashboardPage() {
             <input type="file" accept="image/*" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" />
             {form.photo && (
               <>
-                <img src={form.photo} alt="Preview" className="w-10 h-10 rounded-lg object-cover" />
+                <Image src={form.photo} alt="Preview" className="w-10 h-10 rounded-lg object-cover" width={40} height={40} />
                 <button type="button" className="text-xs text-red-500" onClick={handleRemovePhoto}>Hapus</button>
               </>
             )}
