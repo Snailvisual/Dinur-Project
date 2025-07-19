@@ -393,6 +393,35 @@ export default function DashboardPage() {
   const [chartFilterInteraksi, setChartFilterInteraksi] = useState<'all' | 'ig' | 'tiktok'>('all');
   const [chartFilterFollowers, setChartFilterFollowers] = useState<'all' | 'ig' | 'tiktok'>('all');
 
+  // Tambahkan state untuk TikTok API
+  const [tiktokApiData, setTiktokApiData] = useState<any>(null);
+  const [tiktokApiLoading, setTiktokApiLoading] = useState(false);
+  const [tiktokApiError, setTiktokApiError] = useState<string | null>(null);
+
+  // Ambil access_token TikTok dari localStorage
+  const [tiktokAccessToken, setTiktokAccessToken] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('tiktok_access_token');
+      if (token) setTiktokAccessToken(token);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!tiktokAccessToken) return;
+    setTiktokApiLoading(true);
+    fetch(`/api/tiktok-analytics?access_token=${tiktokAccessToken}`)
+      .then(res => res.json())
+      .then(data => {
+        setTiktokApiData(data);
+        setTiktokApiLoading(false);
+      })
+      .catch(err => {
+        setTiktokApiError("Gagal fetch data TikTok API");
+        setTiktokApiLoading(false);
+      });
+  }, [tiktokAccessToken]);
+
   return (
     <div
       className="space-y-8"
@@ -405,6 +434,14 @@ export default function DashboardPage() {
       }}
     >
       <h1 className="text-3xl font-bold mb-4 text-[#56ad9c]">Reporting Dashboard</h1>
+      {/* Tambahkan info TikTok API */}
+      <div className="mb-4">
+        {tiktokApiLoading && <div className="text-sm text-gray-500">Memuat data TikTok API...</div>}
+        {tiktokApiError && <div className="text-sm text-red-500">{tiktokApiError}</div>}
+        {tiktokApiData && (
+          <pre className="bg-gray-100 rounded p-2 text-xs overflow-x-auto max-h-40">{JSON.stringify(tiktokApiData, null, 2)}</pre>
+        )}
+      </div>
       {/* Header akun */}
       <div className="flex flex-col md:flex-row gap-6 mb-4">
         {/* IG Card + ER IG */}
