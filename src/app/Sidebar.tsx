@@ -40,9 +40,9 @@ export default function Sidebar() {
           <Image
             src="/socialflow-logo.png"
             alt="Logo Socialflow"
-            className="w-40 h-auto object-contain"
-            width={200}
-            height={60}
+            className="w-35 h-auto object-contain"
+            width={180}
+            height={50}
             priority
           />
         </div>

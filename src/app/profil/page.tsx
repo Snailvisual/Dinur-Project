@@ -13,7 +13,6 @@ export interface UserType {
   name: string;
   email: string;
   photo: string;
-  appleId?: string;
   wa?: string;
   password?: string;
   passwordChanged?: boolean;
@@ -47,7 +46,6 @@ export default function ProfilePage() {
             name: parsed.nama || parsed.name || "Nama User",
             email: parsed.email || "user@email.com",
             photo: parsed.photo || "https://ui-avatars.com/api/?name=" + (parsed.nama || parsed.name || "User") + "&background=56ad9c&color=fff",
-            appleId: parsed.appleId || "",
             wa: parsed.wa || "",
           });
         } catch {}
@@ -229,7 +227,6 @@ export default function ProfilePage() {
                 <div className="text-lg font-bold text-[#56ad9c]">{user.name}</div>
                 <div className="text-sm text-gray-400">Email: <span className="font-semibold text-[#56ad9c]">{user.email}</span></div>
                 <div className="text-sm text-gray-400">No. HP: <span className="font-semibold text-[#56ad9c]">{user.wa || '-'}</span></div>
-                <div className="text-sm text-gray-400">AppleID: <span className="font-semibold text-[#56ad9c]">{user.appleId || '-'}</span></div>
               </div>
             </div>
           </div>
