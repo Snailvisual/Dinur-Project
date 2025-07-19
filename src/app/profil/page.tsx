@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import LoginPage from "../login/page";
 import RegisterPage from "../register/page";
@@ -8,7 +8,7 @@ import { useUser } from "../UserContext";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../utils/cropImage";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import TiktokOAuthSection from "./TiktokOAuthSection";
 
 export interface UserType {
   name: string;
@@ -18,71 +18,6 @@ export interface UserType {
   password?: string;
   passwordChanged?: boolean;
   locked?: boolean;
-}
-
-// Komponen TikTok OAuth2 harus client component
-'use client';
-function TiktokOAuthSection() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [tiktokToken, setTiktokToken] = useState<string | null>(null);
-  const [tiktokStatus, setTiktokStatus] = useState<string>("");
-  const TIKTOK_CLIENT_ID = "aw53k1wh289o7jv";
-  const TIKTOK_REDIRECT_URI = typeof window !== 'undefined' ? `${window.location.origin}/profil` : "";
-  const TIKTOK_SCOPE = "user.info.basic,video.list,video.data,video.comment,video.like";
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("tiktok_access_token");
-      if (token) {
-        setTiktokToken(token);
-        setTiktokStatus("Terhubung ke TikTok");
-      } else {
-        setTiktokStatus("");
-      }
-    }
-    const code = searchParams && searchParams.get ? searchParams.get("code") : null;
-    if (code && !tiktokToken) {
-      setTiktokStatus("Menghubungkan ke TikTok...");
-      fetch("/api/tiktok-oauth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, redirect_uri: TIKTOK_REDIRECT_URI })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.access_token) {
-            setTiktokToken(data.access_token);
-            localStorage.setItem("tiktok_access_token", data.access_token);
-            setTiktokStatus("Terhubung ke TikTok");
-            router.replace("/profil");
-          } else {
-            setTiktokStatus("Gagal menghubungkan TikTok");
-          }
-        })
-        .catch(() => setTiktokStatus("Gagal menghubungkan TikTok"));
-    }
-  }, [searchParams, router, tiktokToken]);
-
-  return (
-    <div className="bg-white rounded-xl shadow flex flex-col gap-2 py-4 px-6 mt-4 items-center">
-      <div className="text-sm font-semibold text-gray-700 mb-2">Integrasi TikTok</div>
-      {tiktokToken ? (
-        <div className="text-green-600 font-bold">{tiktokStatus}</div>
-      ) : (
-        <button
-          className="px-4 py-2 rounded bg-[#010101] text-white font-bold shadow transition-all duration-150 hover:scale-105 hover:shadow-lg"
-          onClick={() => {
-            const url = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CLIENT_ID}&response_type=code&scope=${encodeURIComponent(TIKTOK_SCOPE)}&redirect_uri=${encodeURIComponent(TIKTOK_REDIRECT_URI)}&state=socialflow`;
-            window.location.href = url;
-          }}
-        >
-          Login TikTok
-        </button>
-      )}
-      {tiktokStatus && !tiktokToken && <div className="text-red-500 text-xs mt-2">{tiktokStatus}</div>}
-    </div>
-  );
 }
 
 export default function ProfilePage() {
@@ -101,8 +36,8 @@ export default function ProfilePage() {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
   // TikTok OAuth2 config
   const TIKTOK_CLIENT_ID = "aw53k1wh289o7jv"; // Client key TikTok asli
   const TIKTOK_REDIRECT_URI = typeof window !== 'undefined' ? `${window.location.origin}/profil` : "";
@@ -286,168 +221,169 @@ export default function ProfilePage() {
   const buttonBase = "transition-all duration-150 hover:scale-105 hover:shadow-lg";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8f8f8] to-[#eafaf6]">
-      <div className="flex flex-col gap-6 w-full max-w-lg">
-        {/* Card Foto Profil */}
-        <div className="flex flex-col md:flex-row gap-6 mb-4">
-          <div className="flex flex-1 gap-4">
-            <div className="bg-white rounded-lg shadow p-4 flex-1 relative flex items-center gap-4">
-              {user.photo && (
-                <Image src={user.photo} alt="Foto Profil" className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
-              )}
-              <div className="flex-1">
-                <div className="text-lg font-bold text-[#56ad9c]">{user.name}</div>
-                <div className="text-sm text-gray-400">Email: <span className="font-semibold text-[#56ad9c]">{user.email}</span></div>
-                <div className="text-sm text-gray-400">No. HP: <span className="font-semibold text-[#56ad9c]">{user.wa || '-'}</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Card Aksi */}
-        <div className="bg-white rounded-xl shadow flex flex-row gap-4 py-6 px-6 justify-center">
-          <button className={`px-4 py-2 rounded bg-blue-500 text-white font-bold shadow ${buttonBase}`} onClick={() => setShowSettings(true)}>Setting</button>
-          <button className={`px-4 py-2 rounded bg-red-500 text-white font-bold shadow ${buttonBase}`} onClick={() => {
-            if (typeof window !== "undefined") {
-              localStorage.removeItem("currentUser");
-              localStorage.removeItem("tiktok_access_token");
-              window.location.href = "/login";
-            }
-          }}>Logout</button>
-        </div>
-        {/* TikTok OAuth2 Section dengan Suspense */}
-        <Suspense fallback={<div className="text-gray-400 text-sm text-center py-4">Memuat TikTok OAuth...</div>}>
-          <TiktokOAuthSection />
-        </Suspense>
-      </div>
-      {showSettings && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow p-6 w-full max-w-sm flex flex-col items-center">
-            <h2 className="text-xl font-bold mb-4 text-[#56ad9c]">Pengaturan Akun</h2>
-            {/* Edit Foto Profil di atas input nama, mirip dashboard */}
-            <div className="mb-4 w-full flex flex-col items-center">
-              <div className="flex gap-2 items-center">
-                <button type="button" className="bg-[#56ad9c] text-white px-2 py-1 rounded text-xs" onClick={handlePhotoButtonClick} disabled={isLocked}>Upload Foto</button>
-                <input type="file" accept="image/*" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" disabled={isLocked} />
-                {editPhoto && (
-                  <>
-                    <Image src={editPhoto} alt="Preview" className="w-10 h-10 rounded-lg object-cover" width={40} height={40} />
-                    <button type="button" className="text-xs text-red-500" onClick={handleRemovePhoto} title="Hapus Foto">Hapus</button>
-                  </>
+    <>
+      <Suspense fallback={<div>Loading TikTok integration...</div>}>
+        <TiktokOAuthSection />
+      </Suspense>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8f8f8] to-[#eafaf6]">
+        <div className="flex flex-col gap-6 w-full max-w-lg">
+          {/* Card Foto Profil */}
+          <div className="flex flex-col md:flex-row gap-6 mb-4">
+            <div className="flex flex-1 gap-4">
+              <div className="bg-white rounded-lg shadow p-4 flex-1 relative flex items-center gap-4">
+                {user.photo && (
+                  <Image src={user.photo} alt="Foto Profil" className="w-16 h-16 rounded-lg object-cover" width={64} height={64} />
                 )}
+                <div className="flex-1">
+                  <div className="text-lg font-bold text-[#56ad9c]">{user.name}</div>
+                  <div className="text-sm text-gray-400">Email: <span className="font-semibold text-[#56ad9c]">{user.email}</span></div>
+                  <div className="text-sm text-gray-400">No. HP: <span className="font-semibold text-[#56ad9c]">{user.wa || '-'}</span></div>
+                </div>
               </div>
             </div>
-            <input
-              type="text"
-              value={editName}
-              onChange={e => setEditName(e.target.value)}
-              className="border rounded px-3 py-2 w-full mb-3"
-              placeholder="Nama Akun"
-              disabled={isLocked}
-            />
-            <input
-              type="email"
-              value={editEmail}
-              onChange={e => setEditEmail(e.target.value)}
-              className="border rounded px-3 py-2 w-full mb-3"
-              placeholder="Email"
-            />
-            <input
-              type="text"
-              value={editWa}
-              onChange={e => setEditWa(e.target.value)}
-              className="border rounded px-3 py-2 w-full mb-3"
-              placeholder="Nomor HP"
-            />
-            <input
-              type="password"
-              value={editPassword}
-              onChange={e => setEditPassword(e.target.value)}
-              className="border rounded px-3 py-2 w-full mb-3"
-              placeholder="Password Baru (min 6 karakter)"
-            />
-            {settingsError && <div className="text-red-500 text-sm mb-2">{settingsError}</div>}
-            <div className="flex gap-2 mt-4">
-              <button className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => setShowSettings(false)}>Batal</button>
-              <button className="px-4 py-2 rounded bg-[#56ad9c] text-white font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => {
-                if (!editName || !editEmail) {
-                  setSettingsError('Nama dan email wajib diisi.');
-                  return;
-                }
-                if (editPassword && editPassword.length < 6) {
-                  setSettingsError('Password minimal 6 karakter.');
-                  return;
-                }
-                // Update data user di localStorage dan context, termasuk foto dan lock
-                let updated = { ...user, name: editName, nama: editName, email: editEmail, wa: editWa, photo: editPhoto || user.photo };
-                if (editPassword) updated = { ...updated, password: editPassword, passwordChanged: true };
-                setUser(updated);
-                setEditName(editName);
-                setEditEmail(editEmail);
-                setEditWa(editWa);
-                setEditPhoto(updated.photo); // pastikan preview langsung update
-                setEditPassword("");
-                setSettingsError("");
-                setShowSettings(false);
-                if (typeof window !== "undefined") {
-                  localStorage.setItem("currentUser", JSON.stringify(updated));
-                  localStorage.setItem("profileUser", JSON.stringify(updated));
-                  let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
-                  users = users.map((u: any) => u.email === user.email ? { ...u, ...updated } : u);
-                  localStorage.setItem("registeredUsers", JSON.stringify(users));
-                }
-              }}>Simpan</button>
-            </div>
+          </div>
+          {/* Card Aksi */}
+          <div className="bg-white rounded-xl shadow flex flex-row gap-4 py-6 px-6 justify-center">
+            <button className={`px-4 py-2 rounded bg-blue-500 text-white font-bold shadow ${buttonBase}`} onClick={() => setShowSettings(true)}>Setting</button>
+            <button className={`px-4 py-2 rounded bg-red-500 text-white font-bold shadow ${buttonBase}`} onClick={() => {
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("currentUser");
+                localStorage.removeItem("tiktok_access_token");
+                window.location.href = "/login";
+              }
+            }}>Logout</button>
           </div>
         </div>
-      )}
-      {showLogin && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50"
-          style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.2)' }}
-          onClick={() => setShowLogin(false)}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold mb-4 text-[#56ad9c]">Login</h2>
-            <div className="w-full">
-              <LoginPage />
-            </div>
-            <div className="flex justify-center mt-4 w-full">
-              <button
-                type="button"
-                className="px-4 py-1 rounded bg-gray-300 text-gray-700 text-sm font-bold shadow"
-                style={{ minWidth: 0, width: 'auto' }}
-                onClick={() => setShowLogin(false)}
-              >
-                Batal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {showCrop && cropSrc && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-4 min-w-[320px] min-h-[320px] flex flex-col items-center">
-            <div className="w-full h-64 relative">
-              <Cropper
-                image={cropSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={(_, areaPixels) => setCroppedAreaPixels(areaPixels)}
+        {showSettings && (
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow p-6 w-full max-w-sm flex flex-col items-center">
+              <h2 className="text-xl font-bold mb-4 text-[#56ad9c]">Pengaturan Akun</h2>
+              {/* Edit Foto Profil di atas input nama, mirip dashboard */}
+              <div className="mb-4 w-full flex flex-col items-center">
+                <div className="flex gap-2 items-center">
+                  <button type="button" className="bg-[#56ad9c] text-white px-2 py-1 rounded text-xs" onClick={handlePhotoButtonClick} disabled={isLocked}>Upload Foto</button>
+                  <input type="file" accept="image/*" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" disabled={isLocked} />
+                  {editPhoto && (
+                    <>
+                      <Image src={editPhoto} alt="Preview" className="w-10 h-10 rounded-lg object-cover" width={40} height={40} />
+                      <button type="button" className="text-xs text-red-500" onClick={handleRemovePhoto} title="Hapus Foto">Hapus</button>
+                    </>
+                  )}
+                </div>
+              </div>
+              <input
+                type="text"
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                className="border rounded px-3 py-2 w-full mb-3"
+                placeholder="Nama Akun"
+                disabled={isLocked}
               />
-            </div>
-            <div className="flex gap-2 mt-6 justify-center w-full">
-              <button className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => setShowCrop(false)}>Batal</button>
-              <button className="px-4 py-2 rounded bg-[#56ad9c] text-white font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={handleCropComplete}>Crop</button>
+              <input
+                type="email"
+                value={editEmail}
+                onChange={e => setEditEmail(e.target.value)}
+                className="border rounded px-3 py-2 w-full mb-3"
+                placeholder="Email"
+              />
+              <input
+                type="text"
+                value={editWa}
+                onChange={e => setEditWa(e.target.value)}
+                className="border rounded px-3 py-2 w-full mb-3"
+                placeholder="Nomor HP"
+              />
+              <input
+                type="password"
+                value={editPassword}
+                onChange={e => setEditPassword(e.target.value)}
+                className="border rounded px-3 py-2 w-full mb-3"
+                placeholder="Password Baru (min 6 karakter)"
+              />
+              {settingsError && <div className="text-red-500 text-sm mb-2">{settingsError}</div>}
+              <div className="flex gap-2 mt-4">
+                <button className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => setShowSettings(false)}>Batal</button>
+                <button className="px-4 py-2 rounded bg-[#56ad9c] text-white font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => {
+                  if (!editName || !editEmail) {
+                    setSettingsError('Nama dan email wajib diisi.');
+                    return;
+                  }
+                  if (editPassword && editPassword.length < 6) {
+                    setSettingsError('Password minimal 6 karakter.');
+                    return;
+                  }
+                  // Update data user di localStorage dan context, termasuk foto dan lock
+                  let updated = { ...user, name: editName, nama: editName, email: editEmail, wa: editWa, photo: editPhoto || user.photo };
+                  if (editPassword) updated = { ...updated, password: editPassword, passwordChanged: true };
+                  setUser(updated);
+                  setEditName(editName);
+                  setEditEmail(editEmail);
+                  setEditWa(editWa);
+                  setEditPhoto(updated.photo); // pastikan preview langsung update
+                  setEditPassword("");
+                  setSettingsError("");
+                  setShowSettings(false);
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem("currentUser", JSON.stringify(updated));
+                    localStorage.setItem("profileUser", JSON.stringify(updated));
+                    let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+                    users = users.map((u: any) => u.email === user.email ? { ...u, ...updated } : u);
+                    localStorage.setItem("registeredUsers", JSON.stringify(users));
+                  }
+                }}>Simpan</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+        {showLogin && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50"
+            style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.2)' }}
+            onClick={() => setShowLogin(false)}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold mb-4 text-[#56ad9c]">Login</h2>
+              <div className="w-full">
+                <LoginPage />
+              </div>
+              <div className="flex justify-center mt-4 w-full">
+                <button
+                  type="button"
+                  className="px-4 py-1 rounded bg-gray-300 text-gray-700 text-sm font-bold shadow"
+                  style={{ minWidth: 0, width: 'auto' }}
+                  onClick={() => setShowLogin(false)}
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {showCrop && cropSrc && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-4 min-w-[320px] min-h-[320px] flex flex-col items-center">
+              <div className="w-full h-64 relative">
+                <Cropper
+                  image={cropSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_, areaPixels) => setCroppedAreaPixels(areaPixels)}
+                />
+              </div>
+              <div className="flex gap-2 mt-6 justify-center w-full">
+                <button className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => setShowCrop(false)}>Batal</button>
+                <button className="px-4 py-2 rounded bg-[#56ad9c] text-white font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={handleCropComplete}>Crop</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
