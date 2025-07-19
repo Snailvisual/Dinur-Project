@@ -20,6 +20,8 @@ export interface UserType {
   locked?: boolean;
 }
 
+// Komponen TikTok OAuth2 harus client component
+'use client';
 function TiktokOAuthSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
