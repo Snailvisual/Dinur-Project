@@ -139,7 +139,7 @@ export default function ProfilePage() {
       }
     }
     // Cek jika ada code dari TikTok OAuth2
-    const code = searchParams.get("code");
+    const code = searchParams && searchParams.get ? searchParams.get("code") : null;
     if (code && !tiktokToken) {
       setTiktokStatus("Menghubungkan ke TikTok...");
       // Exchange code ke access_token via API route
