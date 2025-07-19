@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import RegisterPage from "../register/page";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-export default function LoginPage({ onShowRegister, onLoginSuccess }: { onShowRegister?: () => void; onLoginSuccess?: () => void }) {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -47,7 +47,7 @@ export default function LoginPage({ onShowRegister, onLoginSuccess }: { onShowRe
       localStorage.setItem("currentUser", JSON.stringify(found));
       setShowSuccess(true);
       setError("");
-      if (onLoginSuccess) onLoginSuccess();
+      // Ganti seluruh pemanggilan onLoginSuccess() menjadi window.location.href = "/profil"
       setTimeout(() => {
         window.location.href = "/profil";
       }, 2000);
@@ -79,7 +79,7 @@ export default function LoginPage({ onShowRegister, onLoginSuccess }: { onShowRe
     setShowSuccess(true);
     setError("");
     setChangeError("");
-    if (onLoginSuccess) onLoginSuccess();
+    // Ganti seluruh pemanggilan onLoginSuccess() menjadi window.location.href = "/profil"
     setTimeout(() => {
       window.location.href = "/profil";
     }, 2000);
@@ -118,7 +118,7 @@ export default function LoginPage({ onShowRegister, onLoginSuccess }: { onShowRe
           <button type="submit" className="w-full py-2 rounded bg-[#56ad9c] text-white font-bold">Masuk</button>
           <button
             type="button"
-            onClick={() => onShowRegister ? onShowRegister() : setShowRegister(true)}
+            onClick={() => setShowRegister(true)}
             className="w-full py-2 rounded bg-white text-[#56ad9c] font-bold border border-[#56ad9c] mt-2"
           >
             Daftar
