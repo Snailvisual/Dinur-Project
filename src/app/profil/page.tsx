@@ -240,7 +240,7 @@ export default function ProfilePage() {
           <button className={`px-4 py-2 rounded bg-red-500 text-white font-bold shadow ${buttonBase}`} onClick={() => {
             if (typeof window !== "undefined") {
               localStorage.removeItem("currentUser");
-              window.location.reload();
+              window.location.href = "/login";
             }
           }}>Logout</button>
         </div>
