@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-const TIKTOK_CLIENT_KEY = "aw53k1wh289o7jv"; // Ganti dengan client key Anda
+const TIKTOK_CLIENT_KEY = "aw53k1vvh289o7jv"; // Ganti dengan client key Anda
 const TIKTOK_CLIENT_SECRET = "j269yYGA4Mw9FjBowtq4un1P7xznljVd"; // Ganti dengan client secret Anda
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,8 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
   const { code, redirect_uri } = req.body;
-  if (!code || !redirect_uri) {
-    return res.status(400).json({ error: 'Missing code or redirect_uri' });
+  // PKCE: get code_verifier from client
+  const code_verifier = req.body.code_verifier;
+  if (!code || !redirect_uri || !code_verifier) {
+    return res.status(400).json({ error: 'Missing code, redirect_uri, or code_verifier' });
   }
   try {
     const params = new URLSearchParams();
@@ -18,6 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     params.append('code', code);
     params.append('grant_type', 'authorization_code');
     params.append('redirect_uri', redirect_uri);
+    params.append('code_verifier', code_verifier);
 
     const response = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
       method: 'POST',

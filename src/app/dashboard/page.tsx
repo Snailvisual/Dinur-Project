@@ -422,6 +422,35 @@ export default function DashboardPage() {
       });
   }, [tiktokAccessToken]);
 
+  // Tambahkan state untuk Instagram API
+  const [instagramApiData, setInstagramApiData] = useState<any>(null);
+  const [instagramApiLoading, setInstagramApiLoading] = useState(false);
+  const [instagramApiError, setInstagramApiError] = useState<string | null>(null);
+  const [instagramAccessToken, setInstagramAccessToken] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('instagram_access_token');
+      if (token) {
+        fetch(`/api/instagram-analytics?access_token=${token}`)
+          .then(res => res.json())
+          .then(data => {
+            localStorage.setItem('instagram_insight_data', JSON.stringify(data));
+          });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('instagram_insight_data');
+      if (cached) {
+        try {
+          setInstagramApiData(JSON.parse(cached));
+        } catch {}
+      }
+    }
+  }, []);
+
   return (
     <div
       className="space-y-8"
@@ -440,6 +469,14 @@ export default function DashboardPage() {
         {tiktokApiError && <div className="text-sm text-red-500">{tiktokApiError}</div>}
         {tiktokApiData && (
           <pre className="bg-gray-100 rounded p-2 text-xs overflow-x-auto max-h-40">{JSON.stringify(tiktokApiData, null, 2)}</pre>
+        )}
+      </div>
+      {/* Tambahkan info Instagram API */}
+      <div className="mb-4">
+        {instagramApiLoading && <div className="text-sm text-gray-500">Memuat data Instagram API...</div>}
+        {instagramApiError && <div className="text-sm text-red-500">{instagramApiError}</div>}
+        {instagramApiData && (
+          <pre className="bg-gray-100 rounded p-2 text-xs overflow-x-auto max-h-40">{JSON.stringify(instagramApiData, null, 2)}</pre>
         )}
       </div>
       {/* Header akun */}

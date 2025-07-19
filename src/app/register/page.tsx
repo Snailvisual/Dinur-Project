@@ -46,7 +46,13 @@ export default function RegisterPage() {
     const password = generatePassword();
     setGeneratedPassword(password);
     setSuccess(true);
-    // Simulasi kirim email konfirmasi
+    // Kirim email konfirmasi ke user
+    fetch("/api/send-confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    // Simulasi alert (bisa dihapus jika email sudah real)
     setTimeout(() => {
       alert(`Email konfirmasi pendaftaran sudah dikirim ke ${email} dengan password: ${password}`);
     }, 500);
@@ -62,7 +68,7 @@ export default function RegisterPage() {
       style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.0)' }}
       onClick={() => window.location.href = "/login"} // Ganti dengan logika internal yang sesuai
     >
-      <div className="bg-white rounded-lg shadow p-8 w-full max-w-md" style={{ background: 'rgba(255,255,255,0.85)', boxShadow: '0 8px 32px 0 rgba(31,38,135,0.37)' }} onClick={e => e.stopPropagation()}>
+      <div className="bg-white boxShadow: '0 8px 32px 0 rgba(31,38,135,0.37)' rounded-lg shadow p-8 w-full max-w-md" style={{ background: 'rgba(255,255,255,0.85)' }} onClick={e => e.stopPropagation()}>
         <h1 className="text-2xl font-bold mb-6 text-[#56ad9c] text-center">Form Pendaftaran</h1>
         {!success ? (
           <form onSubmit={handleRegister} className="space-y-4">

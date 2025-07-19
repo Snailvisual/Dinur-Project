@@ -14,6 +14,10 @@ export default function LoginPage() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [changeError, setChangeError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotError, setForgotError] = useState("");
+  const [forgotSuccess, setForgotSuccess] = useState("");
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -124,7 +128,7 @@ export default function LoginPage() {
             Daftar
           </button>
           <div className="w-full text-right mt-2">
-            <button type="button" className="text-[#56ad9c] text-sm font-semibold hover:underline" onClick={() => alert('Fitur lupa password belum diimplementasikan.')}>Lupa password?</button>
+            <button type="button" className="text-[#56ad9c] text-sm font-semibold hover:underline" onClick={() => setShowForgotPassword(true)}>Lupa password?</button>
           </div>
         </form>
         {showRegister && (
@@ -164,6 +168,48 @@ export default function LoginPage() {
                 />
                 {changeError && <div className="text-red-500 text-sm">{changeError}</div>}
                 <button type="submit" className="w-full py-2 rounded bg-[#56ad9c] text-white font-bold">Simpan Password</button>
+              </form>
+            </div>
+          </div>
+        )}
+        {showForgotPassword && (
+          <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.2)' }}>
+            <div className="bg-white rounded-lg shadow p-8 w-full max-w-md relative flex flex-col items-center" style={{ background: 'rgba(255,255,255,0.85)', boxShadow: '0 8px 32px 0 rgba(31,38,135,0.37)' }}>
+              <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => { setShowForgotPassword(false); setForgotEmail(""); setForgotError(""); setForgotSuccess(""); }}>&times;</button>
+              <h2 className="text-xl font-bold mb-4 text-[#56ad9c]">Reset Password</h2>
+              <form
+                onSubmit={async e => {
+                  e.preventDefault();
+                  setForgotError("");
+                  setForgotSuccess("");
+                  if (!forgotEmail) {
+                    setForgotError("Email wajib diisi.");
+                    return;
+                  }
+                  // Kirim request ke API reset password
+                  const res = await fetch("/api/send-reset-link", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: forgotEmail })
+                  });
+                  if (res.ok) {
+                    setForgotSuccess("Link reset password telah dikirim ke email Anda.");
+                  } else {
+                    setForgotError("Email tidak ditemukan atau gagal mengirim email.");
+                  }
+                }}
+                className="w-full flex flex-col gap-4"
+              >
+                <input
+                  type="email"
+                  placeholder="Masukkan email Anda"
+                  className="border rounded px-3 py-2 w-full"
+                  value={forgotEmail}
+                  onChange={e => setForgotEmail(e.target.value)}
+                />
+                {forgotError && <div className="text-red-500 text-sm">{forgotError}</div>}
+                {forgotSuccess && <div className="text-green-600 text-sm">{forgotSuccess}</div>}
+                <button type="submit" className="w-full py-2 rounded bg-[#56ad9c] text-white font-bold">Kirim Link Reset</button>
               </form>
             </div>
           </div>

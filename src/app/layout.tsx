@@ -4,6 +4,7 @@ import "./globals.css";
 import Sidebar from "./Sidebar";
 import React, { useState, useEffect } from "react";
 import { UserContextProvider } from "./UserContext";
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
@@ -21,6 +22,9 @@ export default function RootLayout({
       "https://ui-avatars.com/api/?name=Nama+User&background=56ad9c&color=fff",
     email: "user@email.com",
   });
+  const pathname = usePathname();
+  const hideSidebar = pathname === "/login" || pathname === "/reset-password";
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const handler = () => {
@@ -67,13 +71,24 @@ export default function RootLayout({
       >
         <UserContextProvider>
           <div className="flex min-h-screen">
-            <aside className="sticky left-0 top-0 h-screen w-0 shrink-0 z-20">
-              <Sidebar />
-            </aside>
+            {!hideSidebar && (
+              <aside className="sticky left-0 top-0 h-screen w-0 shrink-0 z-20">
+                <Sidebar />
+              </aside>
+            )}
             <main
               className={`flex-1 overflow-x-auto transition-all duration-300`}
               style={
-                sidebarHidden
+                hideSidebar
+                  ? {
+                      width: "100vw",
+                      maxWidth: "100vw",
+                      paddingLeft: 0,
+                      paddingRight: 0,
+                      paddingTop: 32,
+                      paddingBottom: 32,
+                    }
+                  : sidebarHidden
                   ? {
                       width: "100vw",
                       maxWidth: "100vw",
