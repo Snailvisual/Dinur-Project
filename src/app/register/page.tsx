@@ -43,6 +43,12 @@ export default function RegisterPage() {
       alert("Semua field wajib diisi.");
       return;
     }
+    // Cek email sudah terdaftar
+    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+    if (users.some((u: any) => u.email === email)) {
+      alert("Email sudah terdaftar, login atau lupa password");
+      return;
+    }
     const password = generatePassword();
     setGeneratedPassword(password);
     setSuccess(true);
@@ -58,7 +64,6 @@ export default function RegisterPage() {
     }, 500);
     // Simpan data user ke localStorage
     const newUser = { nama, email, wa, invoice, password };
-    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
     users.push(newUser);
     localStorage.setItem("registeredUsers", JSON.stringify(users));
   }
