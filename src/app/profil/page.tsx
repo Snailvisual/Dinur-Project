@@ -592,8 +592,8 @@ export default function ProfilePage() {
 // Tambahkan komponen LoginPageWithRegisterPopup
 function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
-      <LoginPage />
-    </>
+  return (
+    <LoginPage />
   );
 }
 
