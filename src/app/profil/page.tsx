@@ -567,27 +567,6 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-      {/* Simpan insight social media ke localStorage saat data berubah */}
-      {/* Hanya jalankan sekali setelah komponen mount, tidak perlu dependensi user/igEngagement/tiktokEngagement */}
-      {typeof window !== "undefined" && user?.email && (
-        <div style={{ display: 'none' }}>
-          {(() => {
-            let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
-            users = users.map((u: any) => {
-              if (u.email === user.email) {
-                return {
-                  ...u,
-                  photo: user.photo,
-                  igEngagement,
-                  tiktokEngagement,
-                };
-              }
-              return u;
-            });
-            localStorage.setItem("registeredUsers", JSON.stringify(users));
-          })()}
-        </div>
-      )}
     </div>
   );
 }
