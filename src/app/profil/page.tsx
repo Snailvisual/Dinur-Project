@@ -567,23 +567,23 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-// Tambahkan komponen LoginPageWithRegisterPopup
-function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
-  const [showRegister, setShowRegister] = useState(false);
-  return (
-    <>
-      <LoginPage />
-      {showRegister && (
-        <div
-          onClick={() => setShowRegister(false)}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-          >
+      {/* Simpan insight social media ke localStorage saat data berubah */}
+      {/* Hanya jalankan sekali setelah komponen mount, tidak perlu dependensi user/igEngagement/tiktokEngagement */}
+      {typeof window !== "undefined" && user?.email && (
+        <div style={{ display: 'none' }}>
+          {(() => {
+            let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+            users = users.map((u: any) => {
+              if (u.email === user.email) {
+                return {
+                  ...u,
+                  photo: user.photo,
+                  igEngagement,
+                  tiktokEngagement,
+                };
+              }
+              return u;
+            });
             <RegisterPage />
           </div>
         </div>
