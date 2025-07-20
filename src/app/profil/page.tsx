@@ -488,7 +488,7 @@ export default function ProfilePage() {
             {settingsError && <div className="text-red-500 text-sm mb-2">{settingsError}</div>}
             <div className="flex gap-2 mt-4">
               <button className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => setShowSettings(false)}>Batal</button>
-              <button className="px-4 py-2 rounded bg-[#56ad9c] text-white font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={() => {
+              <button className="px-4 py-2 rounded bg-[#56ad9c] text-white font-bold transition-all duration-150 hover:scale-105 hover:shadow-lg" onClick={async () => {
                 if (!editName || !editEmail) {
                   setSettingsError('Nama dan email wajib diisi.');
                   return;
@@ -499,7 +499,11 @@ export default function ProfilePage() {
                 }
                 // Update data user di localStorage dan context, termasuk foto dan lock
                 let updated = { ...user, name: editName, nama: editName, email: editEmail, wa: editWa, photo: editPhoto || user.photo };
-                if (editPassword) updated = { ...updated, password: editPassword, passwordChanged: true };
+                let passwordChangedNow = false;
+                if (editPassword) {
+                  updated = { ...updated, password: editPassword, passwordChanged: true };
+                  passwordChangedNow = true;
+                }
                 setUser(updated);
                 setEditName(editName);
                 setEditEmail(editEmail);
@@ -514,6 +518,18 @@ export default function ProfilePage() {
                   let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
                   users = users.map((u: any) => u.email === user.email ? { ...u, ...updated } : u);
                   localStorage.setItem("registeredUsers", JSON.stringify(users));
+                }
+                // Kirim email jika password diubah
+                if (passwordChangedNow) {
+                  try {
+                    await fetch("/api/send-password-changed.ts", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email: editEmail, password: editPassword, name: editName })
+                    });
+                  } catch (e) {
+                    // Optional: tampilkan error ke user
+                  }
                 }
               }}>Simpan</button>
             </div>
@@ -579,5 +595,71 @@ function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () =>
       <LoginPage />
     </>
   );
+}
+
+// Fungsi untuk mengirim email password baru
+async function sendPasswordChangedEmail(email: string, newPassword: string, name?: string) {
+  try {
+    await fetch("/api/send-password-changed.ts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password: newPassword, name }),
+    });
+  } catch (err) {
+    // Optional: tampilkan error ke user
+    console.error("Gagal mengirim email password baru", err);
+  }
+}
+
+// Kirim email password baru saat user mengganti password pertama kali setelah login
+useEffect(() => {
+  if (
+    user &&
+    user.passwordChanged &&
+    typeof window !== "undefined" &&
+    user.password &&
+    !localStorage.getItem("passwordChangedEmailSent")
+  ) {
+    sendPasswordChangedEmail(user.email, user.password, user.name);
+    localStorage.setItem("passwordChangedEmailSent", "true");
+  }
+}, [user]);
+
+// --- Pada handle simpan di modal pengaturan profil ---
+function handleSaveProfile() {
+  if (!editName || !editEmail) {
+    setSettingsError('Nama dan email wajib diisi.');
+    return;
+  }
+  if (editPassword && editPassword.length < 6) {
+    setSettingsError('Password minimal 6 karakter.');
+    return;
+  }
+  let updated = { ...user, name: editName, nama: editName, email: editEmail, wa: editWa, photo: editPhoto || user.photo };
+  let passwordChangedNow = false;
+  if (editPassword) {
+    updated = { ...updated, password: editPassword, passwordChanged: true };
+    passwordChangedNow = true;
+  }
+  setUser(updated);
+  setEditName(editName);
+  setEditEmail(editEmail);
+  setEditWa(editWa);
+  setEditPhoto(updated.photo);
+  setEditPassword("");
+  setSettingsError("");
+  setShowSettings(false);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("currentUser", JSON.stringify(updated));
+    localStorage.setItem("profileUser", JSON.stringify(updated));
+    let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+    users = users.map((u: any) => u.email === user.email ? { ...u, ...updated } : u);
+    localStorage.setItem("registeredUsers", JSON.stringify(users));
+    // Kirim email jika password diubah
+    if (passwordChangedNow) {
+      sendPasswordChangedEmail(updated.email, editPassword);
+      localStorage.removeItem("passwordChangedEmailSent"); // reset flag agar email bisa dikirim lagi jika ganti password
+    }
+  }
 }
 
