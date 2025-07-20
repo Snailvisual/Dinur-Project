@@ -611,18 +611,3 @@ async function sendPasswordChangedEmail(email: string, newPassword: string, name
   }
 }
 
-// Kirim email password baru saat user mengganti password pertama kali setelah login
-useEffect(() => {
-  if (
-    user &&
-    user.passwordChanged &&
-    typeof window !== "undefined" &&
-    user.password &&
-    !localStorage.getItem("passwordChangedEmailSent")
-  ) {
-    sendPasswordChangedEmail(user.email, user.password, user.name);
-    localStorage.setItem("passwordChangedEmailSent", "true");
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [user]);
-
