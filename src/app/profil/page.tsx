@@ -584,31 +584,21 @@ export default function ProfilePage() {
               }
               return u;
             });
-            <RegisterPage />
-          </div>
+            localStorage.setItem("registeredUsers", JSON.stringify(users));
+          })()}
         </div>
       )}
-    </>
+    </div>
   );
 }
 
-// Simpan insight social media ke localStorage saat data berubah
-useEffect(() => {
-  if (typeof window !== "undefined" && user?.email) {
-    let users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
-    users = users.map((u: any) => {
-      if (u.email === user.email) {
-        return {
-          ...u,
-          photo: user.photo,
-          igEngagement,
-          tiktokEngagement,
-          // tambahkan data insight lain jika ada
-        };
-      }
-      return u;
-    });
-    localStorage.setItem("registeredUsers", JSON.stringify(users));
-  }
-}, [user, igEngagement, tiktokEngagement]);
+// Tambahkan komponen LoginPageWithRegisterPopup
+function LoginPageWithRegisterPopup({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
+  const [showRegister, setShowRegister] = useState(false);
+  return (
+    <>
+      <LoginPage />
+    </>
+  );
+}
 
