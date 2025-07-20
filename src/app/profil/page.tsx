@@ -623,11 +623,11 @@ useEffect(() => {
     sendPasswordChangedEmail(user.email, user.password, user.name);
     localStorage.setItem("passwordChangedEmailSent", "true");
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [user]);
 
 // --- Pada handle simpan di modal pengaturan profil ---
 function handleSaveProfile() {
-  if (!editName || !editEmail) {
     setSettingsError('Nama dan email wajib diisi.');
     return;
   }
